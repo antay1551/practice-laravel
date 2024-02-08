@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -25,10 +26,14 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
 
     Route::middleware('is_admin')->group(function () {
         Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
         Route::post('products', [ProductController::class, 'store'])->name('products.store');
+
+        Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('categories', [CategoryController::class, 'store'])->name('categories.store');
     });
 });
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
@@ -14,8 +15,8 @@ class ProductController extends Controller
         return view('products.index', compact('products'));
     }
 
-    public function create()
+    public function create(): View
     {
-
+        return view('products.create');
     }
 }
