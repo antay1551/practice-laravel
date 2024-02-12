@@ -27,4 +27,23 @@ class CategoryController extends Controller
 
         return redirect()->route('categories.index');
     }
+
+    public function edit(Category $category): View
+    {
+        return view('categories.edit', compact('category'));
+    }
+
+    public function update(Category $category, StoreRequest $request): RedirectResponse
+    {
+        $category->update($request->validated());
+
+        return redirect()->route('categories.index');
+    }
+
+    public function destroy(Category $category): RedirectResponse
+    {
+        $category->delete();
+
+        return redirect()->route('categories.index');
+    }
 }
