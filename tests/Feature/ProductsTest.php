@@ -26,7 +26,6 @@ class ProductsTest extends TestCase
         }
 
         return User::factory()->create();
-
     }
 
     public function test_homepage_contains_empty_table(): void
