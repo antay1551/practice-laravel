@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,27 +10,14 @@ class CategoriesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function loginAs($isAdmin = false): CategoriesTest
-    {
-        $user = $this->getUser(isAdmin: $isAdmin);
-        return $this->actingAs($user);
-    }
-
-    private function getUser($isAdmin): User
-    {
-        if ($isAdmin) {
-            return User::factory()->admin()->create();
-        }
-
-        return User::factory()->create();
-    }
-
     public function test_create_category_successful()
     {
         $category = [
             'name' => 'Category 123',
         ];
-        $response = $this->loginAs(isAdmin: true)->post('/categories', $category);
+        $response = $this
+            ->loginAs(isAdmin: true)
+            ->post('/categories', $category);
 
         $response->assertStatus(302);
         $response->assertRedirect('categories');
@@ -46,9 +32,11 @@ class CategoriesTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $response = $this->loginAs(isAdmin: true)->get('categories/' . $category->id . '/edit');
+        $response = $this
+            ->loginAs(isAdmin: true)
+            ->get('categories/' . $category->id . '/edit');
 
-        $response->assertStatus(200);
+        $response->assertOk();
         $response->assertSee('value="' . $category->name . '"', false);
         $response->assertViewHas('category', $category);
     }
@@ -57,7 +45,9 @@ class CategoriesTest extends TestCase
     {
         $category = Category::factory()->create();
 
-        $response = $this->loginAs(isAdmin: true)->put('categories/' . $category->id, [
+        $response = $this
+            ->loginAs(isAdmin: true)
+            ->put('categories/' . $category->id, [
             'name' => ''
         ]);
 
@@ -65,11 +55,25 @@ class CategoriesTest extends TestCase
         $response->assertInvalid(['name']);
     }
 
+    public function test_category_show_in_correct_order()
+    {
+        [$category1, $category2] = Category::factory(2)->create();
+
+        $response = $this
+            ->loginAs(isAdmin: true)
+            ->get('/categories');
+
+        $response->assertOk();
+        $response->assertSeeInOrder([$category1->name, $category2->name]);
+    }
+
     public function test_category_delete_successful()
     {
         $category = Category::factory()->create();
 
-        $response = $this->loginAs(isAdmin: true)->delete('categories/' . $category->id);
+        $response = $this
+            ->loginAs(isAdmin: true)
+            ->delete('categories/' . $category->id);
 
         $response->assertStatus(302);
         $response->assertRedirect('categories');
